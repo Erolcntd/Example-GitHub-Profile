@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GitHub Profile UI — Professional</title>
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --bg2:#0f172a;
+      --card:rgba(255,255,255,.04);
+      --card2:rgba(255,255,255,.06);
+      --border:rgba(255,255,255,.10);
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --accent:#22c55e; /* GitHub-ish green */
+      --accent2:#60a5fa;
+      --shadow: 0 10px 30px rgba(0,0,0,.45);
+      --radius:18px;
+      --radius2:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(96,165,250,.18), transparent 55%),
+        radial-gradient(900px 500px at 85% 20%, rgba(34,197,94,.14), transparent 55%),
+        radial-gradient(900px 600px at 60% 95%, rgba(168,85,247,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg), #070a10 55%, #06070c);
+    }
+
+    /* Layout */
+    .container{max-width:1200px;margin:0 auto;padding:26px 18px 60px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow:var(--shadow);
+      position:sticky;top:14px;backdrop-filter: blur(10px);
+      z-index:10;
+    }
+    .brand{display:flex;align-items:center;gap:10px;min-width:220px}
+    .logo{
+      width:38px;height:38px;border-radius:12px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 40%),
+        linear-gradient(135deg, rgba(34,197,94,.9), rgba(96,165,250,.9));
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .brand h1{font-size:14px;margin:0;line-height:1.1}
+    .brand p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+    .search{
+      flex:1;display:flex;align-items:center;gap:10px;
+      border:1px solid var(--border);border-radius:999px;padding:10px 12px;
+      background:rgba(0,0,0,.25);
+      max-width:520px;
+    }
+    .search svg{opacity:.8}
+    .search input{
+      border:0;outline:0;background:transparent;color:var(--text);
+      width:100%;font-size:13px;
+    }
+    .actions{display:flex;align-items:center;gap:10px}
+    .pill{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:8px 10px;border-radius:999px;border:1px solid var(--border);
+      background:rgba(255,255,255,.03);color:var(--text);
+      display:flex;align-items:center;gap:8px;cursor:pointer;
+      transition:.18s transform, .18s background, .18s border-color;
+      user-select:none;
+    }
+    .pill:hover{transform:translateY(-1px);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.18)}
+    .dot{width:8px;height:8px;border-radius:99px;background:var(--accent);box-shadow:0 0 18px rgba(34,197,94,.55)}
+    .grid{
+      display:grid;grid-template-columns: 360px 1fr;gap:18px;margin-top:18px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .brand{min-width:auto}
+      .search{max-width:none}
+      .topbar{position:relative;top:auto}
+    }
+
+    /* Cards */
+    .card{
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card .head{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+    }
+    .title{
+      display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;
+    }
+    .title code{
+      font-family:var(--mono);
+      font-weight:700;
+      font-size:12px;
+      color:rgba(229,231,235,.92);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      padding:6px 8px;border-radius:10px;
+    }
+    .sub{color:var(--muted);font-size:12px;margin:0}
+    .body{padding:16px}
+
+    /* Profile */
+    .avatarRow{display:flex;gap:14px;align-items:center}
+    .avatar{
+      width:74px;height:74px;border-radius:22px;
+      border:1px solid rgba(255,255,255,.16);
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.22), transparent 42%),
+        linear-gradient(135deg, rgba(96,165,250,.85), rgba(34,197,94,.85));
+      box-shadow:0 12px 28px rgba(0,0,0,.45);
+      flex:0 0 auto;
+    }
+    .name{margin:0;font-size:18px;font-weight:800}
+    .handle{margin:4px 0 0;color:var(--muted);font-family:var(--mono);font-size:12px}
+    .bio{
+      margin:14px 0 0;color:rgba(229,231,235,.92);font-size:13px;line-height:1.55
+    }
+    .meta{
+      margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px
+    }
+    .meta .mini{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+    }
+    .mini b{display:block;font-size:12px}
+    .mini span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+
+    /* Connect with me (görseldeki gibi) */
+    .connectWrap{
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:var(--radius2);
+      padding:14px;
+    }
+    .connectHeader{
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      color:rgba(229,231,235,.92);
+      font-family:var(--mono);
+      font-weight:800;
+      letter-spacing:.3px;
+      margin-bottom:12px;
+    }
+    .connectHeader .angle{color:rgba(96,165,250,.95)}
+    .connectBtns{
+      display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+    }
+    .btn{
+      border:0;cursor:pointer;
+      padding:10px 14px;border-radius:12px;
+      font-family:var(--mono);font-weight:800;font-size:12px;
+      letter-spacing:.6px;text-transform:uppercase;
+      display:flex;align-items:center;gap:10px;
+      color:white;
+      box-shadow:0 10px 18px rgba(0,0,0,.35);
+      transition:.18s transform, .18s filter;
+    }
+    .btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+    .btn svg{opacity:.95}
+    .btn.linkedin{background:linear-gradient(135deg,#0a66c2,#2b8cff)}
+    .btn.instagram{background:linear-gradient(135deg,#fd1d1d,#fcb045)}
+    .btn.gmail{background:linear-gradient(135deg,#ea4335,#ff6a5f)}
+
+    /* Technologies badge row (görseldeki gibi) */
+    .techHeader{
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      font-family:var(--mono);font-weight:900;
+      letter-spacing:.35px;
+      margin:14px 0 10px;
+    }
+    .techHeader .angle{color:rgba(96,165,250,.95)}
+    .badges{
+      display:flex;flex-wrap:wrap;gap:10px;
+      justify-content:center;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      border-radius:var(--radius2);
+    }
+    .badge{
+      display:flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      font-family:var(--mono);font-size:12px;font-weight:900;
+      letter-spacing:.4px;text-transform:uppercase;
+      min-width:110px;justify-content:center;
+    }
+    .sw{width:14px;height:14px;border-radius:4px;display:inline-block}
+    .py{background:#3776ab}
+    .cpp{background:#00599c}
+    .cs{background:#239120}
+    .bs{background:#7952b3}
+    .h5{background:#e34f26}
+    .c3{background:#1572b6}
+    .java{background:#f97316}
+    .r{background:#276dc3}
+    .mysql{background:#64748b}
+    .tsql{background:#ef4444}
+
+    /* Right column */
+    .hero{
+      padding:18px 18px 0;
+    }
+    .heroTop{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    }
+    .headline{margin:0;font-size:22px;font-weight:900;letter-spacing:.2px}
+    .headline span{color:rgba(34,197,94,.95)}
+    .desc{margin:8px 0 0;color:rgba(229,231,235,.86);line-height:1.6;font-size:13px;max-width:68ch}
+    .stats{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;
+    }
+    .stat{
+      padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      min-width:130px;
+    }
+    .stat b{display:block;font-size:12px}
+    .stat span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+
+    .section{padding:16px}
+    .sectionTitle{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px
+    }
+    .sectionTitle h3{margin:0;font-size:13px;font-family:var(--mono);letter-spacing:.45px}
+    .link{
+      color:rgba(96,165,250,.95);
+      font-size:12px;text-decoration:none;border-bottom:1px dashed rgba(96,165,250,.55)
+    }
+
+    .repoGrid{
+      display:grid;grid-template-columns:1fr 1fr;gap:12px;
+    }
+    @media (max-width: 720px){
+      .repoGrid{grid-template-columns:1fr}
+    }
+    .repo{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.20);
+      border-radius:16px;
+      padding:14px;
+      transition:.18s transform, .18s background;
+      cursor:pointer;
+    }
+    .repo:hover{transform:translateY(-2px);background:rgba(0,0,0,.28)}
+    .repoTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .repoName{
+      font-family:var(--mono);
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:.4px;
+      display:flex;align-items:center;gap:8px;
+    }
+    .tag{
+      font-size:11px;
+      padding:6px 8px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      color:rgba(229,231,235,.92);
+      font-family:var(--mono);
+    }
+    .repo p{margin:10px 0 0;color:rgba(229,231,235,.85);font-size:12px;line-height:1.55}
+    .repoMeta{
+      margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);
+      font-family:var(--mono);font-size:11px;
+    }
+    .langDot{width:10px;height:10px;border-radius:99px;display:inline-block;margin-right:6px;vertical-align:-1px}
+    .ld-green{background:var(--accent)}
+    .ld-blue{background:var(--accent2)}
+    .ld-purple{background:#a855f7}
+    .ld-orange{background:#f97316}
+
+    /* Activity */
+    .activity{
+      display:grid;grid-template-columns: 1fr;gap:10px;
+    }
+    .act{
+      display:flex;gap:12px;align-items:flex-start;
+      padding:12px;border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.20);
+    }
+    .act .ic{
+      width:36px;height:36px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(135deg, rgba(34,197,94,.25), rgba(96,165,250,.20));
+      display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+    }
+    .act b{display:block;font-size:12px}
+    .act span{display:block;color:var(--muted);font-size:12px;margin-top:4px;line-height:1.5}
+
+    /* Footer */
+    .footer{
+      margin-top:16px;
+      padding:14px 16px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      background:rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+      display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    }
+    .kbd{font-family:var(--mono);padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:rgba(229,231,235,.9)}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Profile UI</h1>
+          <p>GitHub-styled portfolio</p>
+        </div>
+      </div>
+
+      <div class="search" role="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 21l-4.3-4.3m1.8-5.2a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input placeholder="Search repositories, projects, skills…" />
+      </div>
+
+      <div class="actions">
+        <div class="pill"><span class="dot"></span>Available</div>
+        <div class="pill">Readme</div>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- Left column -->
+      <aside class="card">
+        <div class="head">
+          <div class="title">
+            <code>&lt;/&gt;</code> Profile
+          </div>
+          <p class="sub">Overview</p>
+        </div>
+
+        <div class="body">
+          <div class="avatarRow">
+            <div class="avatar" aria-hidden="true"></div>
+            <div>
+              <p class="name">.................</p>
+              <p class="handle">@...........</p>
+            </div>
+          </div>
+
+          <p class="bio">
+            Backend & data-oriented developer. Clean architecture, performance, and maintainable code.
+            Building production-ready systems with a pragmatic engineering mindset.
+          </p>
+
+          <div class="meta">
+            <div class="mini">
+              <b>Primary Focus</b>
+              <span>Backend • Data • Integrations</span>
+            </div>
+            <div class="mini">
+              <b>Currently</b>
+              <span>Shipping + learning</span>
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <!-- Connect with me (görseldeki hissi) -->
+          <div class="connectWrap">
+            <div class="connectHeader">
+              <span class="angle">&lt;/&gt;</span>
+              <span>Connect with me:</span>
+            </div>
+
+            <div class="connectBtns">
+              <button class="btn linkedin" type="button" onclick="openLink('https://www.linkedin.com')">
+                <!-- LinkedIn icon -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6.5 9.5H3.8V20h2.7V9.5zM5.15 4.4a1.55 1.55 0 10.001 3.101A1.55 1.55 0 005.15 4.4zM20.2 20h-2.7v-5.4c0-1.3-.03-2.9-1.8-2.9-1.8 0-2.1 1.4-2.1 2.8V20h-2.7V9.5h2.6v1.4h.04c.36-.68 1.26-1.8 2.6-1.8 2.8 0 3.3 1.8 3.3 4.2V20z" fill="white"/>
+                </svg>
+                LinkedIn
+              </button>
+
+              <button class="btn instagram" type="button" onclick="openLink('https://www.instagram.com')">
+                <!-- Instagram icon -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M7.5 2.8h9A4.7 4.7 0 0121.2 7.5v9a4.7 4.7 0 01-4.7 4.7h-9A4.7 4.7 0 012.8 16.5v-9A4.7 4.7 0 017.5 2.8zm0 1.9A2.8 2.8 0 004.7 7.5v9a2.8 2.8 0 002.8 2.8h9a2.8 2.8 0 002.8-2.8v-9a2.8 2.8 0 00-2.8-2.8h-9z" fill="white"/>
+                  <path d="M12 7.7a4.3 4.3 0 110 8.6 4.3 4.3 0 010-8.6zm0 1.9a2.4 2.4 0 100 4.8 2.4 2.4 0 000-4.8z" fill="white"/>
+                  <path d="M17.3 6.9a1 1 0 110 2 1 1 0 010-2z" fill="white"/>
+                </svg>
+                Instagram
+              </button>
+
+              <button class="btn gmail" type="button" onclick="openLink('mailto:you@example.com')">
+                <!-- Gmail icon -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 6.8l8 5.9 8-5.9V18a2 2 0 01-2 2H6a2 2 0 01-2-2V6.8z" fill="rgba(255,255,255,.22)"/>
+                  <path d="M4.6 6.2A2 2 0 016 5h12a2 2 0 011.4.6L12 11.2 4.6 6.2z" fill="white"/>
+                </svg>
+                Gmail
+              </button>
+            </div>
+
+            <div class="techHeader">
+              <span class="angle">&lt;/&gt;</span>
+              <span>Technologies, Languages and Tools</span>
+            </div>
+
+            <div class="badges">
+              <div class="badge"><span class="sw py"></span>Python</div>
+              <div class="badge"><span class="sw cpp"></span>C++</div>
+              <div class="badge"><span class="sw cs"></span>C#</div>
+              <div class="badge"><span class="sw bs"></span>Bootstrap</div>
+              <div class="badge"><span class="sw h5"></span>HTML5</div>
+              <div class="badge"><span class="sw c3"></span>CSS3</div>
+              <div class="badge"><span class="sw java"></span>Java</div>
+              <div class="badge"><span class="sw r"></span>R</div>
+              <div class="badge"><span class="sw mysql"></span>MySQL</div>
+              <div class="badge"><span class="sw tsql"></span>T-SQL</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right column -->
+      <main class="card">
+        <div class="hero">
+          <div class="heroTop">
+            <div>
+              <p class="headline">Build. Ship. <span>Iterate.</span></p>
+              <p class="desc">
+                A GitHub-style professional profile interface with a clean README vibe:
+                pinned repos, activity feed, skills badges, and social links — designed for credibility.
+              </p>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <b>Repositories</b>
+                <span>24 public • 7 private</span>
+              </div>
+              <div class="stat">
+                <b>Contributions</b>
+                <span>1,2k last year</span>
+              </div>
+              <div class="stat">
+                <b>Focus</b>
+                <span>Backend & Data</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="sectionTitle">
+            <h3>Pinned Repositories</h3>
+            <a class="link" href="javascript:void(0)">View all</a>
+          </div>
+
+          <div class="repoGrid">
+            <div class="repo" tabindex="0">
+              <div class="repoTop">
+                <div class="repoName">
+                  <span style="opacity:.9">📦</span> commerce-integrations
+                </div>
+                <span class="tag">Production</span>
+              </div>
+              <p>Payment + marketplace adapters, robust error handling, retry policies, and audit logs.</p>
+              <div class="repoMeta">
+                <span><i class="langDot ld-green"></i>Python</span>
+                <span>★ 312</span>
+                <span>⑂ 48</span>
+              </div>
+            </div>
+
+            <div class="repo" tabindex="0">
+              <div class="repoTop">
+                <div class="repoName">
+                  <span style="opacity:.9">🧠</span> data-pipelines
+                </div>
+                <span class="tag">ETL</span>
+              </div>
+              <p>Clean, testable pipelines with validation, schema versioning, and metric hooks.</p>
+              <div class="repoMeta">
+                <span><i class="langDot ld-blue"></i>SQL</span>
+                <span>★ 197</span>
+                <span>⑂ 21</span>
+              </div>
+            </div>
+
+            <div class="repo" tabindex="0">
+              <div class="repoTop">
+                <div class="repoName">
+                  <span style="opacity:.9">⚙️</span> system-design-notes
+                </div>
+                <span class="tag">Docs</span>
+              </div>
+              <p>Practical architecture notes: caching, queues, idempotency, observability, scaling.</p>
+              <div class="repoMeta">
+                <span><i class="langDot ld-purple"></i>Markdown</span>
+                <span>★ 88</span>
+                <span>⑂ 9</span>
+              </div>
+            </div>
+
+            <div class="repo" tabindex="0">
+              <div class="repoTop">
+                <div class="repoName">
+                  <span style="opacity:.9">🕸️</span> web-ui-kit
+                </div>
+                <span class="tag">UI</span>
+              </div>
+              <p>Reusable components: buttons, cards, badges, and responsive layouts (Bootstrap-ready).</p>
+              <div class="repoMeta">
+                <span><i class="langDot ld-orange"></i>HTML/CSS</span>
+                <span>★ 142</span>
+                <span>⑂ 16</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section" style="padding-top:0">
+          <div class="sectionTitle">
+            <h3>Recent Activity</h3>
+            <a class="link" href="javascript:void(0)">Filters</a>
+          </div>
+
+          <div class="activity">
+            <div class="act">
+              <div class="ic" aria-hidden="true">✅</div>
+              <div>
+                <b>Refactored integration layer</b>
+                <span>Improved SMTP/MX configuration handling, added safer defaults, and clearer diagnostics.</span>
+              </div>
+            </div>
+
+            <div class="act">
+              <div class="ic" aria-hidden="true">📈</div>
+              <div>
+                <b>Added SEO tooling helpers</b>
+                <span>Implemented metadata checks and content-length guards for snippet generation.</span>
+              </div>
+            </div>
+
+            <div class="act">
+              <div class="ic" aria-hidden="true">🧪</div>
+              <div>
+                <b>Stabilized tests</b>
+                <span>Introduced deterministic fixtures, reduced flakiness, and improved CI readability.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div>Tip: <span class="kbd">Ctrl</span> + <span class="kbd">K</span> → search hissi için (UI)</div>
+          <div>© 2026 • GitHub-style Profile UI</div>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    function openLink(url){
+      // mailto dahil hepsi için
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  </script>
+</body>
+</html>
